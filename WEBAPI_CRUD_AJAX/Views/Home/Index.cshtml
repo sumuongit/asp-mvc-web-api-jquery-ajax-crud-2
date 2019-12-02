@@ -1,0 +1,208 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <style type="text/css">
+        label {
+            width: 65px;
+            display: inline-block;
+        }
+    </style>
+
+   
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+
+    <script type="text/javascript">
+        function GetAllEmployees() {
+            $.ajax({
+                url: 'api/EmployeesAPI',
+                type: 'GET',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    debugger;
+                    BindEmployees(data);
+                },
+                error: function (error) {
+                    debugger;
+                    alert('Error Loading Employees');
+                }
+            });
+        }
+
+        function GetEmployeeForEdit() {
+            $.ajax({
+                url: 'api/EmployeesAPI/' + $('#txtEmployeeID').val(),
+                type: 'GET',
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    $('#EditName').val(data.Name);
+                    $('#EditAge').val(data.Age);                   
+                    $('#EditState').val(data.State);
+                    $('#EditCountry').val(data.Country);
+                },
+                error: function (error) {
+                    debugger;
+                    alert('Error Loading Employee');
+                }
+            });
+        }
+
+        function UpdateEmployee() {
+            var employee = {
+                EmployeeID: $('#txtEmployeeID').val(),
+                Name: $('#EditName').val(),
+                Age: $('#EditAge').val(),              
+                State: $('#EditState').val(),
+                Country: $('#EditCountry').val()
+            };
+            $.ajax({
+                url: 'api/EmployeesAPI/' + $('#txtEmployeeID').val(),
+                type: 'PUT',
+                data: JSON.stringify(employee),
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Employee updated Successfully');
+                },
+                error: function () {
+                    alert('Employee was not Added');
+                }
+            });
+        }
+
+        function BindEmployees(employees) {
+            $('#employeeList').empty();
+            $.each(employees, function (index, employee) {
+                $('#employeeList').append
+                    ("<li>" + employee.EmployeeID + " - "
+                                    + employee.Name + "</li>");
+            });
+        }
+
+        function AddEmployee() {
+            var contact = {
+                Name: $('#Name').val(),
+                Age: $('#Age').val(),
+                State: $('#State').val(),
+                Country: $('#Country').val()
+            };
+            debugger;
+            $.ajax({
+                url: 'api/EmployeesAPI',
+                type: 'POST',
+                data: JSON.stringify(contact),
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Employee added Successfully');
+                    GetAllEmployees();
+                },
+                error: function () {
+                    alert('Employee was not Added');
+                }
+            });
+        }
+
+        function DeleteEmployee() {            
+            debugger;
+            $.ajax({
+                url: 'api/EmployeesAPI/'+ $('#txtEmployeeIDForDelete').val(),
+                type: 'DELETE',
+                data: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Employee deleted Successfully');
+                    GetAllEmployees();
+                },
+                error: function () {
+                    alert('Employee was not deleted');
+                }
+            });
+        }
+
+    </script>
+
+</head>
+<body>
+    <div>
+        <h2>Exiting Employees</h2>
+        <ul id="employeeList"></ul>
+
+        <input id="btnGetAll" name="btnGetAll"
+               type="button" value="Get All Employees"
+               onclick="GetAllEmployees()" />
+
+        <br />
+
+        <h2>Add New Employee</h2>
+
+        <label>Name : </label>
+        <input type="text" id="Name" />
+        <br />
+        <label>Age : </label>
+        <input type="text" id="Age" />
+        <br />
+        <label>State : </label>
+        <input type="text" id="State" />
+        <br />
+        <label>Country : </label>
+        <input type="text" id="Country" />
+        
+
+        <br />
+        <input id="btnAddEmployee" name="btnAddEmployee"
+               type="button" value="Add Employee"
+               onclick="AddEmployee()" />
+
+
+        <h2>Edit Employee</h2>
+
+        <p>
+            Enter Employee ID :
+            <input type="text" id="txtEmployeeID" />
+            <input type="button" value="Edit"
+                   onclick="GetEmployeeForEdit()" />
+        </p>
+        <span></span>
+
+        <label>Name : </label>
+        <input type="text" id="EditName" />
+        <br />
+        <label>Age : </label>
+        <input type="text" id="EditAge" />        
+        <br />
+        <label>State : </label>
+        <input type="text" id="EditState" />
+        <br />
+        <label>Country : </label>
+        <input type="text" id="EditCountry" />
+
+        <br />
+        <input id="btnUpdateEmployee" name="btnUpdateEmployee"
+               type="button" value="Update Employee"
+               onclick="UpdateEmployee()" />
+
+        <br/>
+
+        <h2>Delete Employee</h2>
+
+        <p>
+            Enter Employee ID :
+            <input type="text" id="txtEmployeeIDForDelete" />
+            <input type="button" value="Delete"
+                   onclick="DeleteEmployee()" />
+        </p>
+        <span></span>
+
+    </div>
+</body>
+</html>
+
+@*SOURCE: http://keyurraval.com/Blog/JQuery-AJAX-CRUD-Operation-On-Web-API-Part-II*@
